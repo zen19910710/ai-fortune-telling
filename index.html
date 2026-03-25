@@ -3,12 +3,14 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AI 八字算命 - 命理排盘系统</title>
+  <title>AI 八字算命 v2.0 - 命理排盘系统</title>
   <link rel="stylesheet" href="style.css">
+  <!-- 引入 lunar-javascript CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/lunar-javascript@1.6.12/lunar.min.js"></script>
 </head>
 <body>
   <div class="container">
-    <h1>🔮 AI 八字算命</h1>
+    <h1>🔮 AI 八字算命 <span class="version-tag">v2.0</span></h1>
     
     <!-- 输入表单 -->
     <div class="card">
@@ -27,6 +29,23 @@
               <option value="男">男</option>
               <option value="女">女</option>
             </select>
+          </div>
+        </div>
+        
+        <!-- 日历类型选择 -->
+        <div class="form-row">
+          <div class="form-group calendar-type-group">
+            <label>日历类型 *</label>
+            <div class="calendar-type-selector">
+              <label class="radio-label">
+                <input type="radio" name="calendarType" value="solar" checked>
+                <span class="radio-text">📅 公历</span>
+              </label>
+              <label class="radio-label">
+                <input type="radio" name="calendarType" value="lunar">
+                <span class="radio-text">🌙 农历</span>
+              </label>
+            </div>
           </div>
         </div>
         
@@ -150,43 +169,97 @@
         </div>
         
         <!-- 身强身弱 -->
-        <div>
+        <div class="shenqiang-container">
           <strong>身强身弱：</strong>
           <span class="shenqiang-badge" id="shenQiangBadge"></span>
         </div>
       </div>
       
-      <!-- 五行统计 -->
+      <!-- 五行统计增强版 -->
       <div class="card">
-        <h2>☯️ 五行统计</h2>
+        <h2>☯️ 五行分析</h2>
         <div class="wuxing-stats">
           <div class="wuxing-item wood">
             <span class="wuxing-count" id="woodCount">0</span>
             <span class="wuxing-label">木</span>
+            <div class="wuxing-bar"><div class="wuxing-fill" id="woodBar"></div></div>
           </div>
           <div class="wuxing-item fire">
             <span class="wuxing-count" id="fireCount">0</span>
             <span class="wuxing-label">火</span>
+            <div class="wuxing-bar"><div class="wuxing-fill" id="fireBar"></div></div>
           </div>
           <div class="wuxing-item earth">
             <span class="wuxing-count" id="earthCount">0</span>
             <span class="wuxing-label">土</span>
+            <div class="wuxing-bar"><div class="wuxing-fill" id="earthBar"></div></div>
           </div>
           <div class="wuxing-item metal">
             <span class="wuxing-count" id="metalCount">0</span>
             <span class="wuxing-label">金</span>
+            <div class="wuxing-bar"><div class="wuxing-fill" id="metalBar"></div></div>
           </div>
           <div class="wuxing-item water">
             <span class="wuxing-count" id="waterCount">0</span>
             <span class="wuxing-label">水</span>
+            <div class="wuxing-bar"><div class="wuxing-fill" id="waterBar"></div></div>
           </div>
         </div>
+        <div class="wuxing-analysis" id="wuxingAnalysis"></div>
+      </div>
+      
+      <!-- 喜用神 -->
+      <div class="card">
+        <h2>🎯 喜用神</h2>
+        <div id="xiyongshen"></div>
       </div>
       
       <!-- 大运排盘 -->
       <div class="card">
         <h2>🔄 大运排盘</h2>
         <div class="dayun-list" id="dayunList"></div>
+      </div>
+      
+      <!-- 性格分析 -->
+      <div class="card report-card">
+        <h2>🎭 性格分析</h2>
+        <div id="personalityReport"></div>
+      </div>
+      
+      <!-- 事业建议 -->
+      <div class="card report-card">
+        <h2>💼 事业建议</h2>
+        <div id="careerReport"></div>
+      </div>
+      
+      <!-- 财运分析 -->
+      <div class="card report-card">
+        <h2>💰 财运分析</h2>
+        <div id="wealthReport"></div>
+      </div>
+      
+      <!-- 婚姻感情 -->
+      <div class="card report-card">
+        <h2>💕 婚姻感情</h2>
+        <div id="marriageReport"></div>
+      </div>
+      
+      <!-- 健康提示 -->
+      <div class="card report-card">
+        <h2>🏥 健康提示</h2>
+        <div id="healthReport"></div>
+      </div>
+      
+      <!-- 运势分析 -->
+      <div class="card report-card">
+        <h2>📈 运势分析</h2>
+        <div id="fortuneReport"></div>
+      </div>
+      
+      <!-- 幸运元素 -->
+      <div class="card report-card">
+        <h2>🍀 幸运元素</h2>
+        <div id="luckyReport"></div>
       </div>
       
       <!-- 断语报告 -->
@@ -224,12 +297,32 @@
         <h2>💡 综合建议</h2>
         <div id="advice"></div>
       </div>
+      
+      <!-- 导出功能 -->
+      <div class="card export-card">
+        <h2>📥 导出报告</h2>
+        <div class="export-buttons">
+          <button class="btn btn-export" onclick="exportToText()">📄 导出文本</button>
+          <button class="btn btn-export" onclick="exportToPDF()">📑 导出 PDF</button>
+          <button class="btn btn-export" onclick="shareReport()">🔗 分享链接</button>
+        </div>
+      </div>
     </div>
   </div>
   
+  <!-- 引入脚本 -->
+  <script src="lunar.js"></script>
   <script src="bazi.js"></script>
+  <script src="wuxing.js"></script>
   <script src="duanyu.js"></script>
+  <script src="report.js"></script>
+  
   <script>
+    // 全局变量存储当前报告
+    let currentReport = null;
+    let currentBazi = null;
+    let currentUserInfo = null;
+    
     // 表单提交处理
     document.getElementById('baziForm').addEventListener('submit', function(e) {
       e.preventDefault();
@@ -237,9 +330,10 @@
       // 获取输入
       const name = document.getElementById('name').value;
       const gender = document.getElementById('gender').value;
-      const year = parseInt(document.getElementById('birthYear').value);
-      const month = parseInt(document.getElementById('birthMonth').value);
-      const day = parseInt(document.getElementById('birthDay').value);
+      const calendarType = document.querySelector('input[name="calendarType"]:checked').value;
+      let year = parseInt(document.getElementById('birthYear').value);
+      let month = parseInt(document.getElementById('birthMonth').value);
+      let day = parseInt(document.getElementById('birthDay').value);
       const hour = parseInt(document.getElementById('birthHour').value);
       const place = document.getElementById('birthPlace').value;
       
@@ -254,6 +348,19 @@
         return;
       }
       
+      // 农历转公历
+      let solarDate = { year, month, day };
+      if (calendarType === 'lunar') {
+        try {
+          // 使用 lunar.js 转换
+          const lunarDate = new Date(year, month - 1, day);
+          const solar = lunarToSolar(year, month, day, false);
+          solarDate = solar;
+        } catch (err) {
+          console.error('农历转换失败:', err);
+        }
+      }
+      
       // 隐藏错误，显示加载
       hideError();
       showLoading();
@@ -263,10 +370,23 @@
       setTimeout(() => {
         try {
           // 计算八字
-          const bazi = calculateBazi({ year, month, day, hour, gender });
+          const bazi = calculateBazi({ 
+            year: solarDate.year, 
+            month: solarDate.month, 
+            day: solarDate.day, 
+            hour, 
+            gender 
+          });
+          
+          // 存储全局变量
+          currentBazi = bazi;
+          currentUserInfo = { name, gender, year, month, day, hour, place, calendarType, solarDate };
           
           // 显示结果
-          displayResult(bazi, { name, gender, year, month, day, hour, place });
+          displayResult(bazi, currentUserInfo);
+          
+          // 生成详细报告
+          currentReport = generateFullReport(bazi, currentUserInfo);
           
           hideLoading();
           showResult();
@@ -280,10 +400,12 @@
     // 显示结果
     function displayResult(bazi, info) {
       // 基本信息
+      const calendarLabel = info.calendarType === 'lunar' ? '农历' : '公历';
       document.getElementById('basicInfo').innerHTML = `
         <p><strong>姓名：</strong>${info.name || '未提供'}</p>
         <p><strong>性别：</strong>${info.gender}</p>
-        <p><strong>公历生日：</strong>${info.year}年${info.month}月${info.day}日</p>
+        <p><strong>${calendarLabel}生日：</strong>${info.year}年${info.month}月${info.day}日</p>
+        ${info.calendarType === 'lunar' ? `<p><strong>转换公历：</strong>${info.solarDate.year}年${info.solarDate.month}月${info.solarDate.day}日</p>` : ''}
         <p><strong>出生时辰：</strong>${getHourName(info.hour)}</p>
         <p><strong>出生地点：</strong>${info.place || '未提供'}</p>
       `;
@@ -313,10 +435,34 @@
       
       // 五行统计
       document.getElementById('woodCount').textContent = bazi.wuxing['木'];
+      document.getElementById('woodBar').style.width = (bazi.wuxing['木'] / 8 * 100) + '%';
+      
       document.getElementById('fireCount').textContent = bazi.wuxing['火'];
+      document.getElementById('fireBar').style.width = (bazi.wuxing['火'] / 8 * 100) + '%';
+      
       document.getElementById('earthCount').textContent = bazi.wuxing['土'];
+      document.getElementById('earthBar').style.width = (bazi.wuxing['土'] / 8 * 100) + '%';
+      
       document.getElementById('metalCount').textContent = bazi.wuxing['金'];
+      document.getElementById('metalBar').style.width = (bazi.wuxing['金'] / 8 * 100) + '%';
+      
       document.getElementById('waterCount').textContent = bazi.wuxing['水'];
+      document.getElementById('waterBar').style.width = (bazi.wuxing['水'] / 8 * 100) + '%';
+      
+      // 五行分析
+      if (typeof analyzeWuxing !== 'undefined') {
+        const wuxingAnalysis = analyzeWuxing(bazi);
+        document.getElementById('wuxingAnalysis').innerHTML = `
+          <p class="wuxing-summary">${wuxingAnalysis.summary}</p>
+        `;
+        
+        // 喜用神
+        document.getElementById('xiyongshen').innerHTML = `
+          <p><strong>喜用神：</strong><span class="xiyong-badge">${wuxingAnalysis.xiyong.join('、')}</span></p>
+          <p><strong>忌神：</strong><span class="jishen-badge">${wuxingAnalysis.jishen.join('、')}</span></p>
+          <p class="xiyong-explanation">喜用神是对命局最有利的五行，忌神是不利的五行</p>
+        `;
+      }
       
       // 大运
       const dayunList = document.getElementById('dayunList');
@@ -326,6 +472,129 @@
           <div class="dayun-pillar">${dy.stem}${dy.branch}</div>
         </div>
       `).join('');
+      
+      // 性格分析
+      if (typeof analyzePersonality !== 'undefined') {
+        const personality = analyzePersonality(bazi);
+        document.getElementById('personalityReport').innerHTML = `
+          <div class="report-item">
+            <p><strong>日主：</strong>${personality.dayMaster.name}（${personality.dayMaster.trait}）</p>
+            <p>${personality.dayMaster.personality}</p>
+            <p><strong>优点：</strong>${personality.dayMaster.strength}</p>
+            <p><strong>注意：</strong>${personality.dayMaster.weakness}</p>
+            <p><strong>身强身弱表现：</strong>${personality.shenQiang}</p>
+            <p><strong>主导五行：</strong>${personality.dominant.trait}</p>
+          </div>
+        `;
+      }
+      
+      // 事业建议
+      if (typeof analyzeCareer !== 'undefined') {
+        const career = analyzeCareer(bazi);
+        document.getElementById('careerReport').innerHTML = `
+          <div class="report-item">
+            <p><strong>适合行业：</strong>${career.industries.map(i => i.industries.slice(0, 3).join('、')).join('、')}</p>
+            <p><strong>发展方向：</strong>${career.direction}</p>
+            <p><strong>创业建议：</strong>${career.development}</p>
+            <p><strong>贵人方位：</strong>${career.direction}</p>
+            <p class="career-advice">${career.advice}</p>
+          </div>
+        `;
+      }
+      
+      // 财运分析
+      if (typeof analyzeWealth !== 'undefined') {
+        const wealth = analyzeWealth(bazi);
+        document.getElementById('wealthReport').innerHTML = `
+          <div class="report-item">
+            <p><strong>财星状况：</strong>${wealth.status}</p>
+            <p><strong>财运类型：</strong>${wealth.type}</p>
+            <p><strong>理财建议：</strong>${wealth.advice}</p>
+            <p><strong>注意破财年份：</strong>${wealth.poCaiYears.join('、')}</p>
+          </div>
+        `;
+      }
+      
+      // 婚姻感情
+      if (typeof analyzeMarriage !== 'undefined') {
+        const marriage = analyzeMarriage(bazi);
+        document.getElementById('marriageReport').innerHTML = `
+          <div class="report-item">
+            <p><strong>配偶特征：</strong>${marriage.spouseTrait}</p>
+            <p><strong>婚姻宫：</strong>${marriage.palace}</p>
+            <p><strong>感情波动年份：</strong>${marriage.emotionYears.join('、')}</p>
+            <p class="marriage-advice">${marriage.advice}</p>
+          </div>
+        `;
+      }
+      
+      // 健康提示
+      if (typeof analyzeHealth !== 'undefined') {
+        const health = analyzeHealth(bazi);
+        document.getElementById('healthReport').innerHTML = `
+          <div class="report-item">
+            <p><strong>五行对应脏腑：</strong></p>
+            <ul class="health-list">
+              ${Object.entries(health.organs).map(([wx, organ]) => 
+                `<li><strong>${wx}：</strong>${organ}</li>`
+              ).join('')}
+            </ul>
+            ${health.weakPoints.length > 0 ? `
+              <p><strong>需注意：</strong></p>
+              <ul class="health-warning">
+                ${health.weakPoints.map(p => `<li>${p}</li>`).join('')}
+              </ul>
+            ` : ''}
+            <p><strong>养生建议：</strong>${health.advice['木']}；${health.advice['火']}；${health.advice['土']}；${health.advice['金']}；${health.advice['水']}</p>
+          </div>
+        `;
+      }
+      
+      // 运势分析
+      if (typeof analyzeFortune !== 'undefined') {
+        const fortune = analyzeFortune(bazi, 2026);
+        document.getElementById('fortuneReport').innerHTML = `
+          <div class="report-item">
+            <p><strong>当前大运：</strong>${fortune.daYun.stem}${fortune.daYun.branch}（${fortune.daYun.age}岁起运）</p>
+            <p><strong>2026 流年：</strong>${fortune.liuNian.summary}</p>
+            <h4>各月运势：</h4>
+            <div class="month-fortune">
+              ${fortune.monthFortune.map(mf => `
+                <span class="month-badge">${mf.month}月：${mf.fortune}</span>
+              `).join('')}
+            </div>
+          </div>
+        `;
+      }
+      
+      // 幸运元素
+      if (typeof getLuckyElements !== 'undefined') {
+        const lucky = getLuckyElements(bazi);
+        document.getElementById('luckyReport').innerHTML = `
+          <div class="lucky-grid">
+            <div class="lucky-item">
+              <span class="lucky-icon">🎨</span>
+              <span class="lucky-label">幸运颜色</span>
+              <span class="lucky-value">${lucky.colors}</span>
+            </div>
+            <div class="lucky-item">
+              <span class="lucky-icon">🔢</span>
+              <span class="lucky-label">幸运数字</span>
+              <span class="lucky-value">${lucky.numbers}</span>
+            </div>
+            <div class="lucky-item">
+              <span class="lucky-icon">🧭</span>
+              <span class="lucky-label">幸运方位</span>
+              <span class="lucky-value">${lucky.directions}</span>
+            </div>
+            <div class="lucky-item">
+              <span class="lucky-icon">⏰</span>
+              <span class="lucky-label">幸运时间</span>
+              <span class="lucky-value">${lucky.times}</span>
+            </div>
+          </div>
+        `;
+      }
       
       // 生成断语报告
       const duanyuReport = generateDuanyuReport(bazi);
@@ -438,6 +707,106 @@
     function hideResult() {
       document.getElementById('resultSection').classList.remove('show');
     }
+    
+    // 导出功能
+    function exportToText() {
+      if (!currentReport) {
+        alert('请先生成报告');
+        return;
+      }
+      
+      const text = generateReportText(currentReport);
+      const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `八字命理报告_${currentUserInfo.name || '未命名'}_${new Date().getTime()}.txt`;
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+    
+    function exportToPDF() {
+      if (!currentReport) {
+        alert('请先生成报告');
+        return;
+      }
+      
+      // 使用 window.print() 实现简单 PDF 导出
+      const printWindow = window.open('', '_blank');
+      printWindow.document.write(`
+        <html>
+          <head>
+            <title>八字命理报告 - ${currentUserInfo.name || '未命名'}</title>
+            <style>
+              body { font-family: Arial, sans-serif; padding: 20px; }
+              h1 { color: #667eea; }
+              .section { margin: 20px 0; padding: 15px; border: 1px solid #ddd; }
+              p { line-height: 1.6; }
+            </style>
+          </head>
+          <body>
+            <h1>🔮 八字命理报告</h1>
+            <p>生成时间：${new Date().toLocaleString('zh-CN')}</p>
+            ${generateReportHTML(currentReport)}
+            <p style="margin-top: 30px; color: #999; font-size: 12px;">* 本报告由 AI 生成，仅供参考娱乐 *</p>
+          </body>
+        </html>
+      `);
+      printWindow.document.close();
+      printWindow.print();
+    }
+    
+    function shareReport() {
+      if (!currentReport) {
+        alert('请先生成报告');
+        return;
+      }
+      
+      // 生成分享链接（简化版，实际需要使用 URL 参数或后端服务）
+      const shareData = {
+        name: currentUserInfo.name,
+        gender: currentUserInfo.gender,
+        year: currentUserInfo.year,
+        month: currentUserInfo.month,
+        day: currentUserInfo.day,
+        hour: currentUserInfo.hour
+      };
+      
+      const shareUrl = window.location.origin + window.location.pathname + 
+        '?data=' + btoa(JSON.stringify(shareData));
+      
+      // 复制到剪贴板
+      navigator.clipboard.writeText(shareUrl).then(() => {
+        alert('分享链接已复制到剪贴板！\n' + shareUrl);
+      }).catch(() => {
+        prompt('请复制以下分享链接：', shareUrl);
+      });
+    }
+    
+    // 页面加载时检查 URL 参数
+    window.addEventListener('DOMContentLoaded', function() {
+      const params = new URLSearchParams(window.location.search);
+      const dataParam = params.get('data');
+      
+      if (dataParam) {
+        try {
+          const data = JSON.parse(atob(dataParam));
+          document.getElementById('name').value = data.name || '';
+          document.getElementById('gender').value = data.gender || '';
+          document.getElementById('birthYear').value = data.year || '';
+          document.getElementById('birthMonth').value = data.month || '';
+          document.getElementById('birthDay').value = data.day || '';
+          document.getElementById('birthHour').value = data.hour || '';
+          
+          // 自动提交
+          setTimeout(() => {
+            document.getElementById('baziForm').requestSubmit();
+          }, 500);
+        } catch (e) {
+          console.error('解析分享数据失败:', e);
+        }
+      }
+    });
   </script>
 </body>
 </html>
