@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI 八字算命 - 命理排盘系统</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <h1>🔮 AI 八字算命</h1>
+    
+    <!-- 输入表单 -->
+    <div class="card">
+      <h2>📝 输入出生信息</h2>
+      <form id="baziForm">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="name">姓名（可选）</label>
+            <input type="text" id="name" placeholder="请输入姓名">
+          </div>
+          
+          <div class="form-group">
+            <label for="gender">性别 *</label>
+            <select id="gender" required>
+              <option value="">请选择</option>
+              <option value="男">男</option>
+              <option value="女">女</option>
+            </select>
+          </div>
+        </div>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label for="birthYear">出生年份 *</label>
+            <input type="number" id="birthYear" min="1900" max="2024" required placeholder="如：1990">
+          </div>
+          
+          <div class="form-group">
+            <label for="birthMonth">出生月份 *</label>
+            <select id="birthMonth" required>
+              <option value="">请选择</option>
+              <option value="1">1 月</option>
+              <option value="2">2 月</option>
+              <option value="3">3 月</option>
+              <option value="4">4 月</option>
+              <option value="5">5 月</option>
+              <option value="6">6 月</option>
+              <option value="7">7 月</option>
+              <option value="8">8 月</option>
+              <option value="9">9 月</option>
+              <option value="10">10 月</option>
+              <option value="11">11 月</option>
+              <option value="12">12 月</option>
+            </select>
+          </div>
+          
+          <div class="form-group">
+            <label for="birthDay">出生日期 *</label>
+            <input type="number" id="birthDay" min="1" max="31" required placeholder="如：15">
+          </div>
+        </div>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label for="birthHour">出生时辰 *</label>
+            <select id="birthHour" required>
+              <option value="">请选择</option>
+              <option value="23">子时 (23:00-01:00)</option>
+              <option value="1">丑时 (01:00-03:00)</option>
+              <option value="3">寅时 (03:00-05:00)</option>
+              <option value="5">卯时 (05:00-07:00)</option>
+              <option value="7">辰时 (07:00-09:00)</option>
+              <option value="9">巳时 (09:00-11:00)</option>
+              <option value="11">午时 (11:00-13:00)</option>
+              <option value="13">未时 (13:00-15:00)</option>
+              <option value="15">申时 (15:00-17:00)</option>
+              <option value="17">酉时 (17:00-19:00)</option>
+              <option value="19">戌时 (19:00-21:00)</option>
+              <option value="21">亥时 (21:00-23:00)</option>
+            </select>
+          </div>
+          
+          <div class="form-group">
+            <label for="birthPlace">出生地点（可选）</label>
+            <input type="text" id="birthPlace" placeholder="如：北京市">
+          </div>
+        </div>
+        
+        <button type="submit" class="btn">🔮 开始排盘</button>
+      </form>
+    </div>
+    
+    <!-- 错误提示 -->
+    <div class="error-message" id="errorMessage"></div>
+    
+    <!-- 加载动画 -->
+    <div class="loading" id="loading">
+      <div class="spinner"></div>
+      <p>正在排盘分析中...</p>
+    </div>
+    
+    <!-- 排盘结果 -->
+    <div class="result-section" id="resultSection">
+      <!-- 基本信息 -->
+      <div class="card">
+        <h2>👤 基本信息</h2>
+        <div id="basicInfo"></div>
+      </div>
+      
+      <!-- 四柱八字 -->
+      <div class="card">
+        <h2>📊 四柱八字</h2>
+        <div class="bazi-grid">
+          <div class="pillar-card">
+            <h3>年柱</h3>
+            <div class="pillar-characters">
+              <span class="pillar-stem" id="yearStem"></span>
+              <span class="pillar-branch" id="yearBranch"></span>
+            </div>
+            <div class="pillar-shishen" id="yearShishen"></div>
+          </div>
+          
+          <div class="pillar-card">
+            <h3>月柱</h3>
+            <div class="pillar-characters">
+              <span class="pillar-stem" id="monthStem"></span>
+              <span class="pillar-branch" id="monthBranch"></span>
+            </div>
+            <div class="pillar-shishen" id="monthShishen"></div>
+          </div>
+          
+          <div class="pillar-card">
+            <h3>日柱</h3>
+            <div class="pillar-characters">
+              <span class="pillar-stem" id="dayStem"></span>
+              <span class="pillar-branch" id="dayBranch"></span>
+            </div>
+            <div class="pillar-shishen">日主</div>
+          </div>
+          
+          <div class="pillar-card">
+            <h3>时柱</h3>
+            <div class="pillar-characters">
+              <span class="pillar-stem" id="hourStem"></span>
+              <span class="pillar-branch" id="hourBranch"></span>
+            </div>
+            <div class="pillar-shishen" id="hourShishen"></div>
+          </div>
+        </div>
+        
+        <!-- 身强身弱 -->
+        <div>
+          <strong>身强身弱：</strong>
+          <span class="shenqiang-badge" id="shenQiangBadge"></span>
+        </div>
+      </div>
+      
+      <!-- 五行统计 -->
+      <div class="card">
+        <h2>☯️ 五行统计</h2>
+        <div class="wuxing-stats">
+          <div class="wuxing-item wood">
+            <span class="wuxing-count" id="woodCount">0</span>
+            <span class="wuxing-label">木</span>
+          </div>
+          <div class="wuxing-item fire">
+            <span class="wuxing-count" id="fireCount">0</span>
+            <span class="wuxing-label">火</span>
+          </div>
+          <div class="wuxing-item earth">
+            <span class="wuxing-count" id="earthCount">0</span>
+            <span class="wuxing-label">土</span>
+          </div>
+          <div class="wuxing-item metal">
+            <span class="wuxing-count" id="metalCount">0</span>
+            <span class="wuxing-label">金</span>
+          </div>
+          <div class="wuxing-item water">
+            <span class="wuxing-count" id="waterCount">0</span>
+            <span class="wuxing-label">水</span>
+          </div>
+        </div>
+      </div>
+      
+      <!-- 大运排盘 -->
+      <div class="card">
+        <h2>🔄 大运排盘</h2>
+        <div class="dayun-list" id="dayunList"></div>
+      </div>
+      
+      <!-- 断语报告 -->
+      <div class="card">
+        <h2>📜 命理断语</h2>
+        
+        <div class="duanyu-section">
+          <h3>基础分析</h3>
+          <div id="basicDuanyu"></div>
+        </div>
+        
+        <div class="duanyu-section">
+          <h3>婚姻运势</h3>
+          <div id="marriageDuanyu"></div>
+        </div>
+        
+        <div class="duanyu-section">
+          <h3>子女运势</h3>
+          <div id="childrenDuanyu"></div>
+        </div>
+        
+        <div class="duanyu-section">
+          <h3>十神分析</h3>
+          <div id="shishenDuanyu"></div>
+        </div>
+        
+        <div class="duanyu-section">
+          <h3>特殊命格</h3>
+          <div id="specialDuanyu"></div>
+        </div>
+      </div>
+      
+      <!-- 综合建议 -->
+      <div class="card">
+        <h2>💡 综合建议</h2>
+        <div id="advice"></div>
+      </div>
+    </div>
+  </div>
+  
+  <script src="bazi.js"></script>
+  <script src="duanyu.js"></script>
+  <script>
+    // 表单提交处理
+    document.getElementById('baziForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      // 获取输入
+      const name = document.getElementById('name').value;
+      const gender = document.getElementById('gender').value;
+      const year = parseInt(document.getElementById('birthYear').value);
+      const month = parseInt(document.getElementById('birthMonth').value);
+      const day = parseInt(document.getElementById('birthDay').value);
+      const hour = parseInt(document.getElementById('birthHour').value);
+      const place = document.getElementById('birthPlace').value;
+      
+      // 验证
+      if (!gender || !year || !month || !day || !hour) {
+        showError('请填写所有必填项');
+        return;
+      }
+      
+      if (year < 1900 || year > 2024) {
+        showError('年份必须在 1900-2024 之间');
+        return;
+      }
+      
+      // 隐藏错误，显示加载
+      hideError();
+      showLoading();
+      hideResult();
+      
+      // 模拟延迟（实际计算很快）
+      setTimeout(() => {
+        try {
+          // 计算八字
+          const bazi = calculateBazi({ year, month, day, hour, gender });
+          
+          // 显示结果
+          displayResult(bazi, { name, gender, year, month, day, hour, place });
+          
+          hideLoading();
+          showResult();
+        } catch (error) {
+          hideLoading();
+          showError('排盘失败：' + error.message);
+        }
+      }, 500);
+    });
+    
+    // 显示结果
+    function displayResult(bazi, info) {
+      // 基本信息
+      document.getElementById('basicInfo').innerHTML = `
+        <p><strong>姓名：</strong>${info.name || '未提供'}</p>
+        <p><strong>性别：</strong>${info.gender}</p>
+        <p><strong>公历生日：</strong>${info.year}年${info.month}月${info.day}日</p>
+        <p><strong>出生时辰：</strong>${getHourName(info.hour)}</p>
+        <p><strong>出生地点：</strong>${info.place || '未提供'}</p>
+      `;
+      
+      // 四柱
+      document.getElementById('yearStem').textContent = bazi.year.stem;
+      document.getElementById('yearBranch').textContent = bazi.year.branch;
+      document.getElementById('yearShishen').textContent = bazi.shiShen.year;
+      
+      document.getElementById('monthStem').textContent = bazi.month.stem;
+      document.getElementById('monthBranch').textContent = bazi.month.branch;
+      document.getElementById('monthShishen').textContent = bazi.shiShen.month;
+      
+      document.getElementById('dayStem').textContent = bazi.day.stem;
+      document.getElementById('dayBranch').textContent = bazi.day.branch;
+      
+      document.getElementById('hourStem').textContent = bazi.hour.stem;
+      document.getElementById('hourBranch').textContent = bazi.hour.branch;
+      document.getElementById('hourShishen').textContent = bazi.shiShen.hour;
+      
+      // 身强身弱
+      const shenQiangEl = document.getElementById('shenQiangBadge');
+      shenQiangEl.textContent = bazi.shenQiang;
+      shenQiangEl.className = 'shenqiang-badge ' + 
+        (bazi.shenQiang === '身旺' ? 'strong' : 
+         bazi.shenQiang === '身弱' ? 'weak' : 'balanced');
+      
+      // 五行统计
+      document.getElementById('woodCount').textContent = bazi.wuxing['木'];
+      document.getElementById('fireCount').textContent = bazi.wuxing['火'];
+      document.getElementById('earthCount').textContent = bazi.wuxing['土'];
+      document.getElementById('metalCount').textContent = bazi.wuxing['金'];
+      document.getElementById('waterCount').textContent = bazi.wuxing['水'];
+      
+      // 大运
+      const dayunList = document.getElementById('dayunList');
+      dayunList.innerHTML = bazi.daYun.map(dy => `
+        <div class="dayun-item">
+          <div class="dayun-age">${dy.age}岁起</div>
+          <div class="dayun-pillar">${dy.stem}${dy.branch}</div>
+        </div>
+      `).join('');
+      
+      // 生成断语报告
+      const duanyuReport = generateDuanyuReport(bazi);
+      
+      // 显示断语
+      displayDuanyu('basicDuanyu', duanyuReport.basic);
+      displayDuanyu('marriageDuanyu', duanyuReport.marriage);
+      displayDuanyu('childrenDuanyu', duanyuReport.children);
+      displayDuanyu('shishenDuanyu', duanyuReport.shishen);
+      displayDuanyu('specialDuanyu', duanyuReport.special);
+      
+      // 综合建议
+      generateAdvice(bazi);
+    }
+    
+    // 显示断语
+    function displayDuanyu(elementId, duanyuList) {
+      const container = document.getElementById(elementId);
+      if (duanyuList.length === 0) {
+        container.innerHTML = '<p style="color: #999;">暂无相关断语</p>';
+        return;
+      }
+      
+      container.innerHTML = duanyuList.map(duanyu => `
+        <div class="duanyu-item">
+          <div class="duanyu-text">${duanyu.text}</div>
+          <div class="duanyu-explanation">${duanyu.explanation}</div>
+        </div>
+      `).join('');
+    }
+    
+    // 生成综合建议
+    function generateAdvice(bazi) {
+      const advice = [];
+      
+      // 根据五行给出建议
+      const wuxing = bazi.wuxing;
+      const minWuxing = Object.entries(wuxing).sort((a, b) => a[1] - b[1])[0];
+      
+      if (minWuxing[1] === 0) {
+        advice.push(`⚠️ 您的八字缺${minWuxing[0]}，建议在日常生活中多补充${minWuxing[0]}元素。`);
+      }
+      
+      // 根据身强身弱给建议
+      if (bazi.shenQiang === '身旺') {
+        advice.push('💪 您身旺，精力充沛，适合从事需要体力和魄力的工作。注意不要过于刚强，学会柔韧。');
+      } else if (bazi.shenQiang === '身弱') {
+        advice.push('🌱 您身弱，需要注意保养身体，避免过度劳累。适合从事脑力劳动或技术类工作。');
+      } else {
+        advice.push('⚖️ 您五行中和，运势较为平稳，保持当前状态即可。');
+      }
+      
+      // 根据日主给建议
+      const dayMasterAdvice = {
+        '甲': '甲木日主：如参天大树，正直有上进心。适合教育、文化、林业相关行业。',
+        '乙': '乙木日主：如花草藤蔓，柔韧灵活。适合艺术、设计、园艺相关行业。',
+        '丙': '丙火日主：如太阳之火，热情开朗。适合演艺、销售、能源相关行业。',
+        '丁': '丁火日主：如灯烛之火，温和细腻。适合餐饮、美容、电子相关行业。',
+        '戊': '戊土日主：如高山之土，稳重诚信。适合房地产、建筑、农业相关行业。',
+        '己': '己土日主：如田园之土，包容宽厚。适合农业、园艺、服务相关行业。',
+        '庚': '庚金日主：如刀剑之金，刚毅果断。适合军警、法律、机械相关行业。',
+        '辛': '辛金日主：如珠宝之金，精致优雅。适合金融、珠宝、美容相关行业。',
+        '壬': '壬水日主：如江河之水，聪明灵活。适合贸易、物流、旅游相关行业。',
+        '癸': '癸水日主：如雨露之水，温柔智慧。适合研究、咨询、文学相关行业。'
+      };
+      
+      advice.push(dayMasterAdvice[bazi.dayMaster] || '');
+      
+      document.getElementById('advice').innerHTML = advice
+        .filter(a => a)
+        .map(a => `<p style="margin-bottom: 15px; line-height: 1.6;">${a}</p>`)
+        .join('');
+    }
+    
+    // 获取时辰名称
+    function getHourName(hour) {
+      const hours = {
+        23: '子时', 1: '丑时', 3: '寅时', 5: '卯时',
+        7: '辰时', 9: '巳时', 11: '午时', 13: '未时',
+        15: '申时', 17: '酉时', 19: '戌时', 21: '亥时'
+      };
+      return hours[hour] || '未知';
+    }
+    
+    // 工具函数
+    function showError(message) {
+      const el = document.getElementById('errorMessage');
+      el.textContent = message;
+      el.classList.add('show');
+    }
+    
+    function hideError() {
+      document.getElementById('errorMessage').classList.remove('show');
+    }
+    
+    function showLoading() {
+      document.getElementById('loading').classList.add('show');
+    }
+    
+    function hideLoading() {
+      document.getElementById('loading').classList.remove('show');
+    }
+    
+    function showResult() {
+      document.getElementById('resultSection').classList.add('show');
+      // 滚动到结果
+      document.getElementById('resultSection').scrollIntoView({ behavior: 'smooth' });
+    }
+    
+    function hideResult() {
+      document.getElementById('resultSection').classList.remove('show');
+    }
+  </script>
+</body>
+</html>
